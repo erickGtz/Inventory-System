@@ -15,8 +15,19 @@ public class UI_InventoryPage : MonoBehaviour
     public void initializeInventoryUI(int inventorySize){
         for (int i = 0; i < inventorySize; i++){
             UI_InventoryItem item = Instantiate(itemPrefab, Vector3.zero, Quaternion.identity);
-
+            item.transform.SetParent(contentPanel);
+            listUI_Items.Add(item);
         }
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
     }
     
 }
