@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class UI_InventoryPage : MonoBehaviour
 {
     [SerializeField]
@@ -10,8 +11,21 @@ public class UI_InventoryPage : MonoBehaviour
 
     [SerializeField]
     private RectTransform contentPanel;
+    [SerializeField]
+    private UI_InventoryDescription itemDescription;
 
     List<UI_InventoryItem> listUI_Items = new List<UI_InventoryItem>();
+
+    public Sprite imageConversion;
+    public int quantity;
+    public string title, description;
+
+
+    private void Awake()
+    {
+        Hide();
+        itemDescription.ResetDescription();
+    }
 
     public void initializeInventoryUI(int inventorySize)
     {
@@ -46,12 +60,15 @@ public class UI_InventoryPage : MonoBehaviour
 
     private void HandleItemSelection(UI_InventoryItem item)
     {
-        Debug.Log("Item selected: " + item.name);
+        itemDescription.SetDescription(imageConversion, title, description);
+        listUI_Items[0].Select();
     }
 
     public void Show()
     {
         gameObject.SetActive(true);
+        itemDescription.ResetDescription();
+        listUI_Items[0].SetData(imageConversion, quantity);
     }
 
     public void Hide()

@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 using TMPro;
 using System;
-using Unity.VisualScripting;
 using UnityEngine.EventSystems;
 
 public class UI_InventoryItem : MonoBehaviour
