@@ -23,11 +23,12 @@ public class UI_InventoryPage : MonoBehaviour
     private MouseFollower mouseFollower;
 
     List<UI_InventoryItem> listUI_Items = new List<UI_InventoryItem>();
-    public Sprite image, image2;
-    public int quantity;
-    public string title, description;
-
     private int currentlyDraggedItemIndex = -1;
+
+    public event Action<int> OnDescriptionRequested, OnItemActionRequested,
+    OnStartDragging;
+
+    public event Action<int, int> OnSwapItems;
 
 
     private void Awake()
@@ -57,19 +58,21 @@ public class UI_InventoryPage : MonoBehaviour
         int index = listUI_Items.IndexOf(item);
         if (index == -1)
         {
-            mouseFollower.Toggle(false);
-            currentlyDraggedItemIndex = -1;
+
             return;
         }
-        listUI_Items[currentlyDraggedItemIndex].SetData(index == 0 ? image : image2, quantity);
-        listUI_Items[index].SetData(currentlyDraggedItemIndex == 0 ? image : image2, quantity);
+        OnSwapItems?.Invoke(currentlyDraggedItemIndex, index);
+    }
+
+    private void ResetDraggedItem()
+    {
         mouseFollower.Toggle(false);
         currentlyDraggedItemIndex = -1;
     }
 
     private void HandleEndDrag(UI_InventoryItem item)
     {
-        mouseFollower.Toggle(false);
+        ResetDraggedItem();
     }
 
     private void HandleBeginDrag(UI_InventoryItem item)
@@ -78,9 +81,22 @@ public class UI_InventoryPage : MonoBehaviour
         if (index == -1)
             return;
         currentlyDraggedItemIndex = index;
+        HandleItemSelection(item);
+        OnStartDragging?.Invoke(index);
+    }
 
+    public void CreateDraggedItem(Sprite sprite, int quantity)
+    {
+        mouseFollower.SetData(sprite, quantity);
         mouseFollower.Toggle(true);
-        mouseFollower.SetData(index == 0 ? image : image2, quantity);
+    }
+
+    public void UpdateData(int itemIndex, Sprite itemImage, int itemQuantity)
+    {
+        if (listUI_Items.Count < itemIndex)
+        {
+            listUI_Items[itemIndex].SetData(itemImage, itemQuantity);
+        }
     }
 
     private void HandleShowItemActions(UI_InventoryItem item)
@@ -90,21 +106,39 @@ public class UI_InventoryPage : MonoBehaviour
 
     private void HandleItemSelection(UI_InventoryItem item)
     {
-        itemDescription.SetDescription(image, title, description);
-        listUI_Items[0].Select();
+        int index = listUI_Items.IndexOf(item);
+        if (index == -1)
+        {
+            return;
+        }
+        OnDescriptionRequested?.Invoke(index);
     }
 
     public void Show()
     {
         gameObject.SetActive(true);
+        ResetSelection();
+    }
+
+    private void ResetSelection()
+    {
         itemDescription.ResetDescription();
-        listUI_Items[0].SetData(image, quantity);
-        listUI_Items[1].SetData(image2, quantity);
+        DeselectAllItems();
+    }
+
+    private void DeselectAllItems()
+    {
+        foreach (UI_InventoryItem item in listUI_Items)
+        {
+            item.Deselect();
+        }
     }
 
     public void Hide()
     {
         gameObject.SetActive(false);
+        ResetDraggedItem();
+        ResetSelection();
     }
 
 }

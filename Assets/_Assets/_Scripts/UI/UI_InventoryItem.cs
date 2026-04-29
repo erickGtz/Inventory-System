@@ -56,10 +56,6 @@ IEndDragHandler, IDropHandler, IDragHandler
 
     public void OnPointerClick(PointerEventData pointerData)
     {
-        if (empty)
-        {
-            return;
-        }
         if (pointerData.button == PointerEventData.InputButton.Right)
         {
             OnRightMouseBtnClick?.Invoke(this);
